@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#3c5220">
+<title>Fairytale Rescue</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #f5f1e8;
+  --bg-alt:     #ebe5d5;
+  --bg-header:  #fdfaf3;
+  --green-dark: #3c5220;
+  --green:      #587832;
+  --green-mid:  #7a9e4a;
+  --green-pale: #e8eddb;
+  --green-bar:  #96bc58;
+  --brown:      #2c2518;
+  --brown-mid:  #6b5f4e;
+  --brown-lt:   #a8977f;
+  --border:     #d5ccb8;
+  --white:      #fefcf7;
+  --serif: 'Lora', Georgia, serif;
+  --sans:  'Open Sans', sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--brown);
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* TOPBAR */
+.topbar {
+  display: block;
+  background: var(--green-dark);
+  color: rgba(255,255,255,0.78);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-align: center;
+  padding: 8px 2rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background 0.2s;
+}
+.topbar:hover { background: #2e3f17; color: #fff; }
+.topbar span { color: rgba(255,255,255,0.42); margin: 0 0.6em; }
+
+/* HEADER */
+header {
+  background: var(--bg-header);
+  text-align: center;
+  padding: 4.5rem 2rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.eyebrow {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 1.2rem;
+}
+h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.1rem, 4.5vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--brown);
+  margin-bottom: 0.6rem;
+}
+h1 em { font-style: italic; color: var(--green); }
+.header-sub {
+  font-size: 14px;
+  color: var(--brown-mid);
+  max-width: 440px;
+  margin: 0 auto 2rem;
+}
+
+/* Stats bar */
+.stats-bar { display: flex; justify-content: center; border-top: 1px solid var(--border); }
+.stat { flex: 1; max-width: 160px; padding: 1.2rem 1rem; border-right: 1px solid var(--border); }
+.stat:last-child { border-right: none; }
+.stat-n { display: block; font-family: var(--serif); font-size: 2rem; font-weight: 400; color: var(--green); line-height: 1; }
+.stat-l { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--brown-lt); }
+
+/* GOAL PROGRESS BAR */
+.goal-bar-wrap {
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--border);
+  padding: 1.4rem 3rem 1.6rem;
+  text-align: center;
+}
+.goal-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  max-width: 700px;
+  margin: 0 auto 0.6rem;
+  font-size: 12px;
+  color: var(--brown-mid);
+}
+.goal-meta strong { font-family: var(--serif); font-size: 1.05rem; font-weight: 400; color: var(--brown); }
+.goal-meta em { font-style: normal; font-size: 11px; color: var(--brown-lt); letter-spacing: 0.06em; }
+.goal-track { max-width: 700px; margin: 0 auto; height: 5px; background: var(--border); border-radius: 99px; overflow: visible; position: relative; }
+.goal-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green) 0%, var(--green-bar) 100%);
+  border-radius: 99px;
+  width: 0;
+  min-width: 0;
+  transition: width 1.4s cubic-bezier(0.16,1,0.3,1);
+  position: relative;
+}
+
+.goal-fill::after {
+  content: '';
+  position: absolute;
+  right: -3px; top: 50%;
+  transform: translateY(-50%);
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  border: 2px solid var(--bg-header);
+  box-shadow: 0 0 0 1px var(--green);
+  opacity: 0;
+  transition: opacity 0.5s ease 1s;
+}
+.goal-fill.loaded::after { opacity: 1; }
+
+/* LAYOUT */
+.layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 60vh;
+}
+
+/* TIMELINE */
+aside {
+  background: var(--bg-alt);
+  border-right: 1px solid var(--border);
+  padding: 3rem 2.5rem 3rem 3rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+aside::-webkit-scrollbar { display: none; }
+
+.section-lbl {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brown-lt);
+  margin-bottom: 2rem;
+}
+
+/* Timeline spine */
+.timeline { position: relative; padding-left: 1.1rem; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 3px; top: 7px; bottom: 12px;
+  width: 1px;
+  background: var(--border);
+}
+
+/* Timeline item wrapper */
+.tl {
+  position: relative;
+  padding: 0 0 0 1.4rem;
+  margin-bottom: 0;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.tl.show { opacity: 1; transform: none; }
+
+/* dot */
+.tl::before {
+  content: '';
+  position: absolute;
+  left: -1.1rem; top: 7px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--bg-alt);
+  border: 1.5px solid var(--brown-lt);
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  z-index: 1;
+}
+.tl.now::before  { background: var(--green); border-color: var(--green); box-shadow: 0 0 0 3px rgba(88,120,50,0.18); }
+.tl.open::before { background: var(--green); border-color: var(--green); }
+
+/* clickable header row */
+.tl-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.4rem;
+  cursor: pointer;
+  padding: 0.55rem 0 0.55rem;
+  user-select: none;
+}
+.tl-header:hover .tl-title { color: var(--green); }
+
+.tl-header-left { flex: 1; }
+.tl-date { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); margin-bottom: 2px; }
+.tl-title { font-family: var(--serif); font-size: 0.96rem; color: var(--brown); transition: color 0.2s; }
+
+.tl-chevron {
+  width: 13px; height: 13px;
+  stroke: var(--brown-lt);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  flex-shrink: 0;
+  margin-top: 6px;
+  transition: transform 0.35s ease, stroke 0.2s;
+}
+.tl.open .tl-chevron { transform: rotate(180deg); stroke: var(--green); }
+
+/* expandable body */
+.tl-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s ease;
+}
+.tl.open .tl-body { grid-template-rows: 1fr; }
+.tl-body-inner { overflow: hidden; }
+
+.tl-detail {
+  padding: 0.1rem 0 1.4rem 0;
+  font-size: 12.5px;
+  color: var(--brown-mid);
+  line-height: 1.7;
+  border-top: 1px solid var(--border);
+}
+
+.tl-detail p { margin-bottom: 0.8rem; }
+
+.tl-links {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.tl-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--green);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: color 0.2s;
+}
+.tl-link:hover { color: var(--green-dark); }
+.tl-link svg {
+  width: 11px; height: 11px;
+  stroke: currentColor; fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.tl + .tl { border-top: 1px solid var(--border); }
+
+/* ABOUT */
+main { padding: 3rem 3.5rem 4rem; background: var(--bg); }
+
+.section-lbl-main {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brown-lt);
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeIn 0.5s ease 0.4s forwards;
+}
+.about-heading {
+  font-family: var(--serif);
+  font-size: clamp(1.7rem, 2.5vw, 2.4rem);
+  font-weight: 400;
+  color: var(--brown);
+  line-height: 1.2;
+  margin-bottom: 2rem;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeUp 0.7s ease 0.5s forwards;
+}
+.about-heading em { font-style: italic; color: var(--green); }
+
+.about-body {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeUp 0.7s ease 0.65s forwards;
+}
+.about-body p { font-size: 14.5px; color: var(--brown-mid); line-height: 1.85; max-width: 620px; }
+.about-body p + p { margin-top: 1.2em; }
+.about-body strong { color: var(--brown); font-weight: 600; }
+
+.about-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  max-width: 620px;
+  margin: 2.5rem 0;
+  opacity: 0;
+  animation: fadeIn 0.5s ease 0.9s forwards;
+}
+.about-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem 2rem;
+  max-width: 620px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeUp 0.6s ease 1s forwards;
+}
+.detail-label { font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--brown-lt); margin-bottom: 0.3rem; }
+.detail-value { font-family: var(--serif); font-size: 1rem; color: var(--brown); }
+.detail-value em { color: var(--green); font-style: normal; font-weight: 600; }
+.detail-value a { color: var(--green); text-decoration: none; }
+.detail-value a:hover { text-decoration: underline; }
+
+/* DONATION  */
+.donation { background: var(--green-dark); color: #e8eedd; padding: 4rem 2rem; text-align: center; }
+.donation h2 { font-family: var(--serif); font-size: 1.9rem; font-weight: 400; margin-bottom: 0.6rem; color: #eef3e4; }
+.donation h2 em { color: #b4d07a; font-style: italic; }
+.donation > p { font-size: 13.5px; color: rgba(232,238,221,0.72); max-width: 420px; margin: 0 auto 2.5rem; line-height: 1.7; }
+.donation-cols { display: flex; justify-content: center; align-items: flex-start; gap: 4rem; flex-wrap: wrap; }
+.qr-box { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; }
+#qr-canvas { padding: 12px; background: #fff; border-radius: 4px; }
+.qr-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(232,238,221,0.5); font-weight: 600; }
+.donation-details { text-align: left; font-size: 13px; color: rgba(232,238,221,0.72); line-height: 1.9; }
+.donation-details strong { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #b4d07a; margin-bottom: 0.3rem; margin-top: 1.2rem; }
+.donation-details strong:first-child { margin-top: 0; }
+.donation-btn { display: inline-block; margin-top: 1.4rem; padding: 10px 28px; background: var(--green-mid); color: #fff; font-size: 11.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; border-radius: 2px; transition: background 0.2s; }
+.donation-btn:hover { background: #8db358; }
+
+/* FOOTER */
+footer { background: var(--bg-alt); border-top: 1px solid var(--border); text-align: center; padding: 2rem; font-size: 11.5px; color: var(--brown-lt); letter-spacing: 0.04em; }
+
+/* ANIMATIONS */
+@keyframes fadeIn { to { opacity: 1; } }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+/* VIDEO EMBED */
+.video-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #111;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+}
+.video-wrap iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+}
+
+/* HEADER LOGO */
+.header-logo {
+  display: block;
+  margin: 0 auto 1.4rem;
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 300px 1fr; }
+}
+@media (max-width: 680px) {
+  .layout { grid-template-columns: 1fr; }
+  aside { position: relative; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 2rem 1.5rem; }
+  main { padding: 2rem 1.5rem 3rem; }
+  header { padding: 3.5rem 1.5rem 0; }
+  .stats-bar { display: grid; grid-template-columns: 1fr 1fr; }
+  .stat { max-width: none; }
+  .stat:nth-child(2) { border-right: none; }
+  .stat:nth-child(3), .stat:nth-child(4) { border-top: 1px solid var(--border); }
+  .stat:nth-child(4) { border-right: none; }
+  .goal-bar-wrap { padding: 1.2rem 1.5rem 1.4rem; }
+  .goal-meta { font-size: 11px; }
+  .donation-cols { flex-direction: column; align-items: center; gap: 2rem; }
+  .about-detail { grid-template-columns: 1fr; gap: 1.2rem; }
+}
+@media (max-width: 380px) {
+  h1 { font-size: 1.8rem; }
+  .stats-bar { display: none; }
+}
+</style>
+</head>
+<body>
+
+<a class="topbar" href="https://vpravljici.si" target="_blank" rel="noopener">
+  Fairytale Rescue <span>·</span> First and largest educational animal rescue farm in Slovenia <span>·</span> Visit us ↗
+</a>
+
+<header>
+  <img class="header-logo" src="Logo1.png" alt="V Pravljici" width="340">
+  <h1>A sanctuary built on<br><em>compassion</em></h1>
+  <p class="header-sub">Three years of rescued lives, growing community, and unwavering care.</p>
+  <div class="stats-bar">
+    <div class="stat"><span class="stat-n">50+</span><span class="stat-l">Rescued animals</span></div>
+    <div class="stat"><span class="stat-n">24</span><span class="stat-l">Supporters</span></div>
+    <div class="stat"><span class="stat-n">300+</span><span class="stat-l">Children visited</span></div>
+    <div class="stat"><span class="stat-n">3</span><span class="stat-l">Years active</span></div>
+  </div>
+</header>
+
+<div class="goal-bar-wrap">
+  <div class="goal-meta">
+    <div><strong id="raised-label">€ 5,530</strong>&nbsp; raised</div>
+    <em id="pct-label">—</em>
+    <div>Goal: <strong>€ 500,000</strong></div>
+  </div>
+  <div class="goal-track">
+    <div class="goal-fill" id="goal-fill"></div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- LEFT: TIMELINE -->
+  <aside>
+    <p class="section-lbl">Timeline</p>
+    <div class="timeline" id="timeline"></div>
+  </aside>
+
+  <!-- RIGHT: ABOUT -->
+  <main>
+    <p class="section-lbl-main">About the project</p>
+    <h2 class="about-heading">A place where every<br><em>life matters</em></h2>
+    <div class="about-body">
+      <p><strong>Fairytale Rescue</strong> is the first and largest educational peace farm in Slovenia. By rescuing and caring for animals, we create a safe and free sanctuary where every being gets the chance to live with dignity.</p>
+      <p>Our farm is open for visits every <strong>first Sunday of the month at 15:00</strong>. Through donations, godparenthood, and volunteer work you help us provide food, veterinary care, and upkeep for more than <strong>50 rescued souls</strong>.</p>
+      <p>Together we build a space where compassion, respect, and responsibility are taught — for animals, for nature, for each other.</p>
+    </div>
+    <p>
+      <a href="https://www.youtube.com/@vpravljici" target="_blank">
+        ▶ Watch Our Videos
+      </a>
+    </p>
+    <hr class="about-divider">
+    <div class="about-detail">
+      <div class="detail-item">
+        <p class="detail-label">Location</p>
+        <p class="detail-value">Pleše 11, Škofljica, Slovenia</p>
+      </div>
+      <div class="detail-item">
+        <p class="detail-label">Open visits</p>
+        <p class="detail-value">Every <em>1st Sunday</em>, 15:00</p>
+      </div>
+      <div class="detail-item">
+        <p class="detail-label">Founded</p>
+        <p class="detail-value">January 2022</p>
+      </div>
+      <div class="detail-item">
+        <p class="detail-label">Animals in care</p>
+        <p class="detail-value"><em>50+</em> rescued souls</p>
+      </div>
+      <div class="detail-item">
+        <p class="detail-label">Contact</p>
+        <p class="detail-value"><a href="mailto:vpravljici@gmail.com">vpravljici@gmail.com</a></p>
+      </div>
+      <div class="detail-item">
+        <p class="detail-label">Website</p>
+        <p class="detail-value"><a href="https://vpravljici.si" target="_blank" rel="noopener">vpravljici.si ↗</a></p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<section class="donation">
+  <h2>Support <em>our work</em></h2>
+  <p>Every contribution — large or small — keeps this space free, independent, and open to all.</p>
+  <script src="https://donorbox.org/widget.js" paypalExpress="false"></script> <iframe src="https://donorbox.org/embed/save-the-sanctuary?" name="donorbox" allowpaymentrequest="allowpaymentrequest" seamless="seamless" frameborder="0" scrolling="no" height="900px" width="100%" style="max-width: 450px; min-width: 250px; max-height:none!important" allow="payment"></iframe>
+</section>
+
+<footer>Updated May 2026 &nbsp;·&nbsp; Thank you to all supporters &nbsp;·&nbsp; <a href="https://vpravljici.si" style="color:inherit;">vpravljici.si</a></footer>
+
+<script>
+/* TIMELINE DATA */
+const timelineData = [
+  {
+    date: 'Jan 2022',
+    title: 'Founded',
+    detail: 'Fairytale Rescue was established in Škofljica by a small group of animal rights advocates. The first residents — pigs and goats rescued from intensive farms — arrived in the opening week.',
+    links: [
+      { label: 'Our story',    url: 'https://vpravljici.si/en/about-us/' },
+      { label: 'About us',     url: 'https://vpravljici.si/en/home/' }
+    ]
+  },
+  {
+    date: 'Apr 2022',
+    title: 'First supporters',
+    detail: 'Mateja and Gregor became the project\'s founding godparents, pledging monthly support. Their contributions funded the first full season of veterinary care and winter feed for all residents.',
+    links: [
+      { label: 'Become a godparent', url: 'https://vpravljici.si/en/godparenthood/' },
+      { label: 'Donate',             url: 'https://vpravljici.si/en/donacije-eng/' }
+    ]
+  },
+  {
+    date: 'Sep 2022',
+    title: 'Expansion',
+    detail: 'A second barn was completed with volunteer labour and donated materials, doubling capacity. Fifteen new animals arrived — chickens, ducks, and a pair of donkeys named Boštjan and Metka.',
+    links: [
+      { label: 'Meet the animals', url: 'https://vpravljici.si/en/our-animals/' },
+      { label: 'Volunteer',        url: 'https://vpravljici.si/en/contact/' }
+    ]
+  },
+  {
+    date: 'Dec 2022',
+    title: 'Compassion feast',
+    detail: 'The first annual holiday gathering brought together 80 visitors, donors, and volunteers. The afternoon raised €1,200 and established what has since become a beloved seasonal tradition.',
+    links: [
+      { label: 'Upcoming events', url: 'https://vpravljici.si/en/home/' },
+      { label: 'Facebook',        url: 'https://www.facebook.com/vpravljici' }
+    ]
+  },
+  {
+    date: 'Mar 2023',
+    title: 'Community grows',
+    detail: 'Word spread through social media and local networks. Seven new godparentships were established within three months, lifting recurring monthly income above €500 for the first time.',
+    links: [
+      { label: 'Facebook',  url: 'https://www.facebook.com/vpravljici' },
+      { label: 'Instagram', url: 'https://www.instagram.com/vpravljici/' }
+    ]
+  },
+  {
+    date: 'Sep 2023',
+    title: 'Education programme',
+    detail: 'A formal education programme launched in partnership with local schools. Regular visits teach children about animal welfare, food systems, and empathy. Over 300 children attended in the first year.',
+    links: [
+      { label: 'Book a visit',    url: 'https://vpravljici.si/en/contact/' },
+      { label: 'Education info',  url: 'https://vpravljici.si/en/home/' }
+    ]
+  },
+  {
+    date: 'Feb 2024',
+    title: '50 rescued',
+    detail: 'The farm celebrated a milestone: 50 animals in permanent care. Residents include pigs, goats, sheep, chickens, ducks, geese, donkeys, and rabbits — each with a name and a story.',
+    links: [
+      { label: 'Meet the animals', url: 'https://vpravljici.si/en/our-animals/' },
+      { label: 'Sponsor an animal', url: 'https://vpravljici.si/en/godparenthood/' }
+    ]
+  },
+  {
+    date: 'Now',
+    title: 'Ongoing',
+    now: true,
+    detail: 'The story continues. We are currently fundraising for a new veterinary facility and expanded pasture land. Every contribution, however small, moves this work forward.',
+    links: [
+      { label: 'Donate now', url: 'https://vpravljici.si/en/donacije-eng/' },
+      { label: 'Volunteer',  url: 'https://vpravljici.si/en/contact/' },
+      { label: 'Contact us', url: 'https://vpravljici.si/en/contact/' }
+    ]
+  }
+];
+
+/* RENDER TIMELINE */
+const extSVG = `<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+const chevSVG = `<svg class="tl-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+
+const timeline = document.getElementById('timeline');
+
+timelineData.forEach((item, i) => {
+  const links = item.links.map(l =>
+    `<a class="tl-link" href="${l.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${extSVG} ${l.label}</a>`
+  ).join('');
+
+  const div = document.createElement('div');
+  div.className = 'tl' + (item.now ? ' now' : '');
+  div.style.transitionDelay = `${i * 0.07}s`;
+  div.innerHTML = `
+    <div class="tl-header">
+      <div class="tl-header-left">
+        <p class="tl-date">${item.date}</p>
+        <p class="tl-title">${item.title}</p>
+      </div>
+      ${chevSVG}
+    </div>
+    <div class="tl-body">
+      <div class="tl-body-inner">
+        <div class="tl-detail">
+          <p>${item.detail}</p>
+          <div class="tl-links">${links}</div>
+        </div>
+      </div>
+    </div>
+  `;
+  div.querySelector('.tl-header').addEventListener('click', () => {
+    const isOpen = div.classList.contains('open');
+    document.querySelectorAll('.tl.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) div.classList.add('open');
+  });
+  timeline.appendChild(div);
+});
+
+/* INTERSECTION OBSERVER */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('show');
+    io.unobserve(e.target);
+  });
+}, { threshold: 0.05 });
+document.querySelectorAll('.tl').forEach(el => io.observe(el));
+
+/* PROGRESS BAR */
+const RAISED = 5530;
+const GOAL   = 500000;
+const pct    = RAISED / GOAL * 100;           // 0.846
+const pctStr = pct < 1 ? pct.toFixed(1) : Math.round(pct); // "0.8"
+
+document.getElementById('pct-label').textContent = `${pctStr}% of goal`;
+
+setTimeout(() => {
+  const fill = document.getElementById('goal-fill');
+  fill.style.width = pct + '%';
+  fill.classList.add('loaded');
+}, 300);
+
+/* QR CODE */
+new QRCode(document.getElementById('qr-canvas'), {
+  text: 'https://vpravljici.si/en/donacije-eng/',
+  width: 140, height: 140,
+  colorDark: '#3c5220', colorLight: '#ffffff',
+  correctLevel: QRCode.CorrectLevel.M
+});
+</script>
+</body>
+</html>
