@@ -495,6 +495,9 @@ footer { background: var(--bg-alt); border-top: 1px solid var(--border); text-al
   <h2>Support <em>our work</em></h2>
   <p>Every contribution — large or small — keeps this space free, independent, and open to all.</p>
   <script src="https://donorbox.org/widget.js" paypalExpress="false"></script> <iframe src="https://donorbox.org/embed/save-the-sanctuary?" name="donorbox" allowpaymentrequest="allowpaymentrequest" seamless="seamless" frameborder="0" scrolling="no" height="900px" width="100%" style="max-width: 450px; min-width: 250px; max-height:none!important" allow="payment"></iframe>
+
+ <img class="header-logo" src="Donorbox.png" alt="V Pravljici" width="340">
+ <img class="header-logo" src="Stripe.png" alt="V Pravljici" width="280">
 </section>
 
 <footer>Updated May 2026 &nbsp;·&nbsp; Thank you to all supporters &nbsp;·&nbsp; <a href="https://vpravljici.si" style="color:inherit;">vpravljici.si</a></footer>
@@ -640,14 +643,6 @@ setTimeout(() => {
   fill.style.width = pct + '%';
   fill.classList.add('loaded');
 }, 300);
-
-/* QR CODE */
-new QRCode(document.getElementById('qr-canvas'), {
-  text: 'https://vpravljici.si/en/donacije-eng/',
-  width: 140, height: 140,
-  colorDark: '#3c5220', colorLight: '#ffffff',
-  correctLevel: QRCode.CorrectLevel.M
-});
 </script>
 </body>
 </html>
